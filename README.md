@@ -23,12 +23,6 @@ The **Gold Exchange Platform** is a Rust-based application designed to simulate 
         - Person A's balance: 50g
         - Person B's balance: 250g
 
-## Getting Started
-
-### Prerequisites
-
-- **Rust**: Ensure you have Rust installed. You can download it from [Rust's official website](https://www.rust-lang.org/).
-
 ## Technologies Used
 
 - **Rust**: The primary programming language for the platform.

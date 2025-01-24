@@ -1,5 +1,10 @@
+use banking_demo_web::app::app;
 
 
- fn main() {
-    println!("Hello, world!");
+
+#[tokio::main]
+ async fn main() {
+
+    app().await;
+
 }

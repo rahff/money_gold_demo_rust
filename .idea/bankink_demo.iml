@@ -7,11 +7,13 @@
       <sourceFolder url="file://$MODULE_DIR$/src/core/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/application/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/web/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/infra/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/core/target" />
       <excludeFolder url="file://$MODULE_DIR$/src/core/target" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
       <excludeFolder url="file://$MODULE_DIR$/src/application/target" />
       <excludeFolder url="file://$MODULE_DIR$/src/web/target" />
+      <excludeFolder url="file://$MODULE_DIR$/src/infra/target" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

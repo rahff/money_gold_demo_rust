@@ -27,6 +27,7 @@ fn reject_transfer(rejection_cause: TransferRejectionCause) -> TransferDecision 
 fn accept_transfer(request: TransferRequest) -> TransferDecision {
     TransferDecision::Accepted {
         gram_gold: request.gram_gold.value(),
-        destination: request.destination
+        destination: request.destination,
+        from_id: request.account_id
     }
 }

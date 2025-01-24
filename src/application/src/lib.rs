@@ -1,11 +1,18 @@
-mod events;
-mod spi;
-mod services;
-mod use_case;
+pub mod events;
+pub mod spi;
+pub mod services;
+pub mod use_case;
+pub mod id_provider;
+pub mod account_repository;
+pub mod exceptions;
+mod data;
 
 
 #[cfg(test)]
 mod tests {
+    use banking_demo_core::data_object::TransferRejectionCause;
+    use crate::events::EventId;
+    use crate::exceptions::{AccountStatusError, CreateTransferRequestError, TransactionError, TransferFailedError};
     use crate::tests::fixtures::gold_transfer_testing_version;
     pub use crate::spi::{AccountRepository, IdGenerator};
 
@@ -16,9 +23,9 @@ mod tests {
             .execute(String::from("good_destination_id"), String::from("good_account_id"), 5.0).await;
         match result {
             Ok(transfer_event) => {
-                assert_eq!(transfer_event.initiator_account, String::from("good_account_id"));
-                assert_eq!(transfer_event.id, String::from("fake_uuid_123"));
-                assert_eq!(transfer_event.destination_account, String::from("good_destination_id"));
+                assert_eq!(transfer_event.initiator_account, "good_account_id".to_string());
+                assert_eq!(transfer_event.id, EventId("fake_uuid_123".to_string()));
+                assert_eq!(transfer_event.destination_account, "good_destination_id".to_string());
                 assert_eq!(transfer_event.gram_gold_amount, 5.0)
             },
             Err(_) => assert!(false)
@@ -32,7 +39,11 @@ mod tests {
             .execute(String::from("good_destination_id"), String::from("good_account_id"), 50000.0).await;
         match result {
             Ok(_) => assert!(false),
-            Err(rejected) => assert_eq!(rejected.reason, String::from("InsufficientBalance"))
+            Err(rejected) => {
+                assert_eq!(rejected.reason, TransferFailedError::TransactionError(TransactionError::BusinessReason(TransferRejectionCause::InsufficientBalance)));
+                assert_eq!(rejected.initiator_account, String::from("good_account_id"));
+                assert_eq!(rejected.destination_account, String::from("good_destination_id"));
+            }
         }
     }
 
@@ -43,7 +54,11 @@ mod tests {
             .execute(String::from("good_destination_id"), String::from("good_account_id"), -500.0).await;
         match result {
             Ok(_) => assert!(false),
-            Err(rejected) => assert_eq!(rejected.reason, String::from("Invalid gold quantity"))
+            Err(rejected) => {
+                assert_eq!(rejected.reason, TransferFailedError::InvalidRequest(CreateTransferRequestError::InvalidGoldQuantity));
+                assert_eq!(rejected.initiator_account, String::from("good_account_id"));
+                assert_eq!(rejected.destination_account, String::from("good_destination_id"));
+            }
         }
     }
 
@@ -55,8 +70,8 @@ mod tests {
         match result {
             Ok(_) => assert!(false),
             Err(reject_event) => {
-                assert_eq!(reject_event.reason, String::from("Destination not found or invalid"));
-                assert_eq!(reject_event.id, String::from("fake_uuid_123"));
+                assert_eq!(reject_event.reason, TransferFailedError::InvalidRequest(CreateTransferRequestError::InvalidTransferRequest(AccountStatusError::AccountNotFoundError)));
+                assert_eq!(reject_event.id, EventId("fake_uuid_123".to_string()));
                 assert_eq!(reject_event.destination_account, String::from("wrong_destination_id"));
                 assert_eq!(reject_event.initiator_account, String::from("good_account_id"));
                 assert_eq!(reject_event.gram_gold_amount, 5.0);
@@ -81,7 +96,7 @@ mod tests {
     mod fakes {
         use async_trait::async_trait;
         use banking_demo_core::data_object::{AccountState, AccountStatus};
-        use crate::spi::{AccountNotFoundError};
+        use crate::exceptions::{AccountStatusError, TransactionError};
         use crate::tests::{AccountRepository, IdGenerator};
         pub struct FakeIdGenerator {}
         impl FakeIdGenerator {
@@ -100,19 +115,24 @@ mod tests {
                 FakesAccountRepository{}
             }
         }
+
         #[async_trait]
         impl AccountRepository for FakesAccountRepository {
 
-            async fn get_account_state(&self, _: String) -> Result<AccountState, AccountNotFoundError> {
+            async fn get_account_state(&self, _: String) -> Result<AccountState, AccountStatusError> {
                 Ok(AccountState::new(587.0, AccountStatus::Active))
             }
 
-            async fn verify_destination(&self, destination_id: String) -> Option<String> {
+            async fn verify_destination(&self, destination_id: String) -> Result<String, AccountStatusError> {
                 if destination_id == String::from("good_destination_id") {
-                    Some(String::from("good_destination_id"))
+                    Ok(String::from("good_destination_id"))
                 }else {
-                    None
+                    Err(AccountStatusError::AccountNotFoundError)
                 }
+            }
+
+            async fn persist_transaction(&self, _: String, _: String, _: f32) -> Result<(), TransactionError> {
+                Ok(())
             }
         }
     }

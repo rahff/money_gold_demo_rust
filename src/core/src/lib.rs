@@ -14,15 +14,15 @@ mod tests {
     #[test]
     fn customer_with_sufficient_funds_and_activated_account_can_make_gold_transfer() {
         let account_state = AccountState::new(200.0, AccountStatus::Active);
-        let gold_transfer_request = TransferRequest::new(GoldQuantity::new(100.0).unwrap(), String::from("98765"),"123".to_string());
+        let gold_transfer_request = TransferRequest::new(GoldQuantity::new(100.0).unwrap(), DestinationAccountId("98765".to_string()),AccountId("123".to_string()));
         let gold_transfer_decision = gold_transfer(account_state, gold_transfer_request);
-        assert_eq!(gold_transfer_decision, TransferDecision::Accepted {gram_gold: 100.0, destination: String::from("98765"), from_id: "123".to_string()});
+        assert_eq!(gold_transfer_decision, TransferDecision::Accepted {gram_gold: 100.0, destination: DestinationAccountId("98765".to_string()), from_id: AccountId("123".to_string())});
     }
 
     #[test]
     fn customer_with_not_sufficient_funds_cannot_make_gold_transfer() {
         let account_state = AccountState::new(200.0, AccountStatus::Active);
-        let gold_transfer_request = TransferRequest::new(GoldQuantity::new(201.0).unwrap(), String::from("98765"), "123".to_string());
+        let gold_transfer_request = TransferRequest::new(GoldQuantity::new(201.0).unwrap(), DestinationAccountId("98765".to_string()), AccountId("123".to_string()));
         let gold_transfer_decision = gold_transfer(account_state, gold_transfer_request);
         assert_eq!(gold_transfer_decision, TransferDecision::Rejected{reason: InsufficientBalance})
     }

@@ -5,7 +5,7 @@ use serde_json::{json, Value};
 use banking_demo_application::account_repository::InMemoryAccountTable;
 use banking_demo_application::exceptions::{AccountStatusError, CreateTransferRequestError, TransactionError, TransferFailedError};
 use banking_demo_application::id_provider::UUIDGenerator;
-use banking_demo_application::use_case::TransferGold;
+use banking_demo_application::use_case::{TransferGold, TransferResult};
 use serde::{Deserialize, Serialize};
 use banking_demo_application::events::{GoldTransferEvent, TransferRejectedEvent};
 use banking_demo_application::spi::{AccountRepository, IdGenerator};
@@ -19,12 +19,11 @@ pub struct TransferGoldPayload {
 }
 
 
-
-pub async fn transfer_gold_controller<T: AccountRepository, I: IdGenerator>(transfer_gold: TransferGold<T, I>, payload: Json<TransferGoldPayload>) -> Response<Value> {
+pub async fn transfer_gold_controller<T: AccountRepository, I: IdGenerator>(transfer_gold: TransferGold<T, I>, payload: Json<TransferGoldPayload>) -> (Response<Value>, TransferResult) {
     let result = transfer_gold.execute(payload.destination_id.clone(), payload.from_id.clone(), payload.amount).await;
     match result {
-        Ok(ok_event) => ok_response(ok_event),
-        Err(reject_event) => reject_response(reject_event)
+        Ok(ok_event) => (ok_response(ok_event.clone()), Ok(ok_event)),
+        Err(reject_event) => (reject_response(reject_event.clone()), Err(reject_event))
     }
 }
 
@@ -36,7 +35,7 @@ fn reject_response(reject_event: TransferRejectedEvent) -> Response<Value> {
 }
 
 fn ok_response(ok_event: GoldTransferEvent) -> Response<Value> {
-    Response::builder().status(200).body(json!({"event_id": ok_event.id, "status": 200})).unwrap()
+    Response::builder().status(200).body(json!({"event": ok_event, "status": 200})).unwrap()
 }
 
 fn handle_rejected_transfer(reject_event: TransferRejectedEvent) -> ErrorResponse {

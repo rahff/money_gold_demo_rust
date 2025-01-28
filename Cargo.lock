@@ -123,6 +123,7 @@ version = "0.1.0"
 name = "banking_demo_web"
 version = "0.1.0"
 dependencies = [
+ "async-trait",
  "axum",
  "banking_demo_application",
  "serde",

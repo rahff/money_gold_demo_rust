@@ -11,12 +11,12 @@ impl EventId {
     }
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Clone)]
 pub struct GoldTransferEvent {
     pub id: EventId,
-    pub(crate) destination_account: String,
-    pub(crate) initiator_account: String,
-    pub(crate) gram_gold_amount: f32,
+    pub destination_account: String,
+    pub initiator_account: String,
+    pub gram_gold_amount: f32,
 }
 
 impl GoldTransferEvent {

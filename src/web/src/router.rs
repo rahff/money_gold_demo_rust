@@ -10,7 +10,8 @@ use crate::controller::{transfer_gold_controller, TransferGoldPayload};
 
 pub fn gold_transfer_router(use_case: TransferGold<InMemoryAccountTable, UUIDGenerator>) -> Router {
     Router::new().route("/transfer", post(|payload: Json<TransferGoldPayload>| async move {
-        let response = transfer_gold_controller(use_case, payload).await;
+        let (response, _) = transfer_gold_controller(use_case, payload).await;
+        // should publish event into queue here to update read side model
         (response.status(), Json(response.body())).into_response()
     }))
 }

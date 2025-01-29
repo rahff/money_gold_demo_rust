@@ -4,8 +4,8 @@ mod exceptions;
 mod transfer_gold_module;
 pub mod app;
 mod event_queue;
-mod route_handler;
-
+mod events;
+mod http_response;
 
 #[cfg(test)]
 mod tests {

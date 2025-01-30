@@ -1,4 +1,3 @@
-use std::fmt::Error;
 use std::sync::{Arc, Mutex};
 use async_trait::async_trait;
 use crate::events::TransferEvents;

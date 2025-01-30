@@ -59,7 +59,3 @@ fn handle_invalid_request(reason: CreateTransferRequestError) -> ErrorResponse {
         }
     }
 }
-
-pub fn internal_error_server() -> ErrorResponse {
-    ErrorResponse::InternalServer { message: "Something failed unexpectedly".to_string() }
-}

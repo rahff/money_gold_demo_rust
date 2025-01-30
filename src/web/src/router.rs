@@ -8,6 +8,7 @@ use crate::http_response::make_response_from_event;
 use crate::transfer_gold_module::TransferGoldModule;
 
 
+
 pub async fn add_transfer_gold_capacity() -> Router {
     let mut event_publisher = InMemoryEventPublisher::new();
     let repository = InMemoryAccountTable::new();
@@ -16,6 +17,5 @@ pub async fn add_transfer_gold_capacity() -> Router {
         let event = transfer_gold_controller(transfer_gold_use_case, payload).await;
         let published_event = event_publisher.publish(event.clone()).await;
         make_response_from_event(published_event)
-
     }))
 }

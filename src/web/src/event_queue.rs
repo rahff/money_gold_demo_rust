@@ -1,10 +1,11 @@
+use std::fmt::Error;
 use std::sync::{Arc, Mutex};
 use async_trait::async_trait;
 use crate::events::TransferEvents;
 
 #[async_trait]
 pub trait EventPublisher {
-    async fn publish(&mut self, event: TransferEvents) -> TransferEvents;
+    async fn publish(&mut self, event: TransferEvents) -> ();
 }
 
 
@@ -21,9 +22,8 @@ impl InMemoryEventPublisher {
 
 #[async_trait]
 impl EventPublisher for InMemoryEventPublisher {
-    async fn publish(&mut self, event: TransferEvents) -> TransferEvents {
+    async fn publish(&mut self, event: TransferEvents) -> () {
         self.events.lock().unwrap().push(event.clone());
         println!("event published {:?}", self.events.clone());
-        event
     }
 }

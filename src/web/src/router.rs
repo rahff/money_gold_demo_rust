@@ -15,7 +15,7 @@ pub async fn add_transfer_gold_capacity() -> Router {
     let transfer_gold_use_case = TransferGoldModule::new(repository, UUIDGenerator::new()).transfer_gold;
     Router::new().route("/transfer", post(|payload: Json<TransferGoldPayload>| async move {
         let event = transfer_gold_controller(transfer_gold_use_case, payload).await;
-        let published_event = event_publisher.publish(event.clone()).await;
-        make_response_from_event(published_event)
+        event_publisher.publish(event.clone()).await;
+        make_response_from_event(event)
     }))
 }

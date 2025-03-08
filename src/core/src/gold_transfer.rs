@@ -15,7 +15,7 @@ fn reject_with_account_status_reason(account_state: AccountState) ->TransferDeci
     }
 }
 fn check_balance(account_state: AccountState, request: TransferRequest) -> TransferDecision {
-    match account_state.balance > request.gram_gold.value() {
+    match account_state.balance > request.gram_gold {
         true => accept_transfer(request),
         false => reject_transfer(InsufficientBalance)
     }

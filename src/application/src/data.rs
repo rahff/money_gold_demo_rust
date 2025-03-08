@@ -1,4 +1,4 @@
-use banking_demo_core::data_object::{AccountState, AccountStatus};
+use banking_demo_core::data_object::{AccountState, AccountStatus, GoldQuantity};
 
 #[derive(Clone, Debug)]
 pub struct AccountData {
@@ -9,6 +9,6 @@ pub struct AccountData {
 
 impl AccountData {
     pub fn to_account_state(&self) -> AccountState {
-        AccountState::new(self.balance, self.account_status.clone())
+        AccountState::new(GoldQuantity::new(self.balance).unwrap_or(GoldQuantity::zero()), self.account_status.clone())
     }
 }

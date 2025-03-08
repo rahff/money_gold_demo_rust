@@ -17,7 +17,7 @@ pub trait IdGenerator {
 
 #[cfg(test)]
 mod spi_test {
-    use banking_demo_core::data_object::{AccountState, AccountStatus};
+    use banking_demo_core::data_object::{AccountState, AccountStatus, GoldQuantity};
     use crate::account_repository::InMemoryAccountTable;
     use crate::spi::{AccountRepository, AccountStatusError};
 
@@ -60,7 +60,7 @@ mod spi_test {
     fn check_destination_account_balance(result2: Result<AccountState, AccountStatusError>) {
         match result2 {
             Ok(account_state) => {
-                let expected: f32 = 550.0;
+                let expected: GoldQuantity = GoldQuantity::new(550.0).unwrap();
                 assert_eq!(account_state.balance, expected)
             },
             Err(_) => assert!(false)
@@ -70,7 +70,7 @@ mod spi_test {
     fn check_from_account_balance(result1: Result<AccountState, AccountStatusError>) {
         match result1 {
             Ok(account_state) => {
-                let expected: f32 = 750.0;
+                let expected = GoldQuantity::new(750.0).unwrap();
                 assert_eq!(account_state.balance, expected)
             },
             Err(_) => assert!(false)

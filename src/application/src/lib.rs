@@ -95,7 +95,7 @@ mod tests {
     }
     mod fakes {
         use async_trait::async_trait;
-        use banking_demo_core::data_object::{AccountState, AccountStatus};
+        use banking_demo_core::data_object::{AccountState, AccountStatus, GoldQuantity};
         use crate::exceptions::{AccountStatusError, TransactionError};
         use crate::tests::{AccountRepository, IdGenerator};
         pub struct FakeIdGenerator {}
@@ -120,7 +120,7 @@ mod tests {
         impl AccountRepository for FakesAccountRepository {
 
             async fn get_account_state(&self, _: String) -> Result<AccountState, AccountStatusError> {
-                Ok(AccountState::new(587.0, AccountStatus::Active))
+                Ok(AccountState::new(GoldQuantity::new(587.0).unwrap(), AccountStatus::Active))
             }
 
             async fn verify_destination(&self, destination_id: String) -> Result<String, AccountStatusError> {

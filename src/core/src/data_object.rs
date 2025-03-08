@@ -1,13 +1,14 @@
+use std::cmp::Ordering;
 use std::fmt::Display;
 
 
 
 pub struct AccountState {
-    pub balance: f32,
+    pub balance: GoldQuantity,
     pub status: AccountStatus
 }
 impl AccountState {
-    pub fn new(balance: f32, status: AccountStatus) -> AccountState {
+    pub fn new(balance: GoldQuantity, status: AccountStatus) -> AccountState {
         AccountState { balance, status }
     }
 }
@@ -81,7 +82,7 @@ impl Display for TransferRejectionCause {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct GoldQuantity {
     gram_gold: f32,
 }
@@ -93,5 +94,21 @@ impl GoldQuantity {
     }
     pub fn value(&self) -> f32 {
         self.gram_gold
+    }
+
+    pub fn zero() -> GoldQuantity {
+        GoldQuantity { gram_gold: 0.0 }
+    }
+}
+
+impl PartialEq for GoldQuantity {
+    fn eq(&self, other: &Self) -> bool {
+        self.gram_gold == other.gram_gold
+    }
+}
+
+impl PartialOrd for GoldQuantity {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        self.gram_gold.partial_cmp(&other.gram_gold)
     }
 }

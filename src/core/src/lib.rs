@@ -13,7 +13,7 @@ mod tests {
 
     #[test]
     fn customer_with_sufficient_funds_and_activated_account_can_make_gold_transfer() {
-        let account_state = AccountState::new(200.0, AccountStatus::Active);
+        let account_state = AccountState::new(GoldQuantity::new(200.0).unwrap(), AccountStatus::Active);
         let gold_transfer_request = TransferRequest::new(GoldQuantity::new(100.0).unwrap(), DestinationAccountId("98765".to_string()),AccountId("123".to_string()));
         let gold_transfer_decision = gold_transfer(account_state, gold_transfer_request);
         assert_eq!(gold_transfer_decision, TransferDecision::Accepted {gram_gold: 100.0, destination: DestinationAccountId("98765".to_string()), from_id: AccountId("123".to_string())});
@@ -21,7 +21,7 @@ mod tests {
 
     #[test]
     fn customer_with_not_sufficient_funds_cannot_make_gold_transfer() {
-        let account_state = AccountState::new(200.0, AccountStatus::Active);
+        let account_state = AccountState::new(GoldQuantity::new(200.0).unwrap(), AccountStatus::Active);
         let gold_transfer_request = TransferRequest::new(GoldQuantity::new(201.0).unwrap(), DestinationAccountId("98765".to_string()), AccountId("123".to_string()));
         let gold_transfer_decision = gold_transfer(account_state, gold_transfer_request);
         assert_eq!(gold_transfer_decision, TransferDecision::Rejected{reason: InsufficientBalance})
@@ -29,7 +29,7 @@ mod tests {
 
     #[test]
     fn customer_with_blocked_account_cannot_make_gold_transfer() {
-        let account_state = AccountState::new(200.0, AccountStatus::Blocked);
+        let account_state = AccountState::new(GoldQuantity::new(200.0).unwrap(), AccountStatus::Blocked);
         let gold_transfer_request = TransferRequest::new(GoldQuantity::new(100.0).unwrap(), DestinationAccountId("98765".to_string()), AccountId("123".to_string()));
         let gold_transfer_decision = gold_transfer(account_state, gold_transfer_request);
         assert_eq!(gold_transfer_decision, TransferDecision::Rejected{reason: AccountBlocked})
@@ -37,7 +37,7 @@ mod tests {
 
     #[test]
     fn customer_with_suspended_account_cannot_make_gold_transfer() {
-        let account_state = AccountState::new(200.0, AccountStatus::Suspended);
+        let account_state = AccountState::new(GoldQuantity::new(200.0).unwrap(), AccountStatus::Suspended);
         let gold_transfer_request = TransferRequest::new(GoldQuantity::new(100.0).unwrap(), DestinationAccountId("98765".to_string()), AccountId("123".to_string()));
         let gold_transfer_decision = gold_transfer(account_state, gold_transfer_request);
         assert_eq!(gold_transfer_decision, TransferDecision::Rejected{reason: AccountSuspended})
@@ -45,7 +45,7 @@ mod tests {
 
     #[test]
     fn the_customer_must_be_informed_why_its_transfer_was_rejected() {
-        let account_state = AccountState::new(200.0, AccountStatus::Suspended);
+        let account_state = AccountState::new(GoldQuantity::new(200.0).unwrap(), AccountStatus::Suspended);
         let gold_transfer_request = TransferRequest::new(GoldQuantity::new(100.0).unwrap(), DestinationAccountId("98765".to_string()), AccountId("123".to_string()));
         let gold_transfer_decision = gold_transfer(account_state, gold_transfer_request);
         assert_eq!(gold_transfer_decision, TransferDecision::Rejected{reason: AccountSuspended})
